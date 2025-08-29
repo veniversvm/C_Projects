@@ -8,6 +8,7 @@
 #define ResultGreen 0
 #define ResultYellow 2
 #define ResultRed 4
+#define max 5195
 
 typedef char Result;
 
@@ -17,6 +18,13 @@ struct s_result
   char color[5];
 };
 
+struct s_word {
+  char **array;
+  int n;
+};
+
+typedef struct s_word Words;
+
 // This is a function definition/signature
 int main(int, char **);
 void cw(char *guess, char *word, Result *output_res);
@@ -25,6 +33,77 @@ void Example_print_result(Result *res);
 bool insin(char, char *);
 
 // Funciton Implementations
+Words readfile(char *filename)
+{
+  char buf[8];
+  static char ret[max][5];
+  int i, size;
+  FILE *fd;
+
+  // Words words;
+
+
+  fd = fopen(filename, "r");
+  if (!fd)
+  {
+     perror("fopen");
+     Words words = {
+      .array = (char **)0,
+      .n = 0,
+     };
+     return words;
+  }
+
+  size = max * 5;
+
+
+  i= 0;
+
+
+  memset(buf, 0 , 8);
+  while (fgets(buf, 7, fd))
+  {
+    size = strlen(buf);
+    size = size >= 5 ? 5 : -1 ;
+    
+    if (size == -1)
+    {
+      memset(buf, 0, 8);
+      continue;
+    }
+
+    buf[size] = 0;
+
+    if (size != 5)
+    {
+      memset(buf, 0, 8);
+      continue;
+    }
+
+    ret[i][0] = buf[0];
+    ret[i][1] = buf[1];
+    ret[i][2] = buf[2];
+    ret[i][3] = buf[3];
+    ret[i][4] = buf[4];
+
+    memset(buf, 0, 8);
+    i++;
+
+    if  (max <= i)
+    {
+      break;
+    }
+
+  }
+
+  fclose(fd);
+  Words words = {
+    .array = (char **)&ret,
+    .n = i
+  };
+  
+  return words;
+}
 
 bool isin(char c, char *str)
 {
@@ -116,6 +195,10 @@ int main(int argc, char *argv[])
   // Llamada a la función
   cw(correct, guess, game_result);
   Example_print_result(game_result); // Pasar el array completo
+
+
+  return 0;
+}
 
 
   return 0;
